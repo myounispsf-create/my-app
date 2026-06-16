@@ -113,7 +113,7 @@ onMounted(async () => {
     router.push('/login')
     return
   }
-  const res = await fetch('http://localhost:5000/api/todos', { headers })
+  const res = await fetch('https://my-app-production-ada4.up.railway.app/api/todos', { headers })
   todos.value = await res.json()
 })
 
@@ -125,7 +125,7 @@ function logout() {
 
 async function addTodo() {
   if (!newTodo.value) return
-  const res = await fetch('http://localhost:5000/api/todos', {
+  const res = await fetch('https://my-app-production-ada4.up.railway.app/api/todos', {
     method: 'POST',
     headers,
     body: JSON.stringify({ text: newTodo.value })
@@ -136,7 +136,7 @@ async function addTodo() {
 }
 
 async function deleteTodo(id) {
-  await fetch(`http://localhost:5000/api/todos/${id}`, {
+  await fetch(`https://my-app-production-ada4.up.railway.app/api/todos/${id}`, {
     method: 'DELETE',
     headers
   })
@@ -144,7 +144,7 @@ async function deleteTodo(id) {
 }
 
 async function toggleDone(id) {
-  await fetch(`http://localhost:5000/api/todos/${id}`, {
+  await fetch(`https://my-app-production-ada4.up.railway.app/api/todos/${id}`, {
     method: 'PUT',
     headers
   })
@@ -158,7 +158,7 @@ function startEdit(todo) {
 }
 
 async function saveEdit(todo) {
-  await fetch(`http://localhost:5000/api/todos/${todo._id}`, {
+  await fetch(`https://my-app-production-ada4.up.railway.app/api/todos/${todo._id}`, {
     method: 'PUT',
     headers,
     body: JSON.stringify({ text: todo.text })
