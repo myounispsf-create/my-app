@@ -9,7 +9,9 @@ const { router: authRoutes, authMiddleware } = require('./auth')
 const app = express()
 const PORT = process.env.PORT || 5000
 
-app.use(cors())
+app.use(cors({
+  origin: ['https://my-app-eta-two-73.vercel.app', 'http://localhost:5173']
+}))
 app.use(express.json())
 app.use('/api/auth', authRoutes)
 
