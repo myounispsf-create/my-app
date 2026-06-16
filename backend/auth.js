@@ -1,3 +1,26 @@
+const express = require('express')
+const router = express.Router()
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const User = require('./User')
+
+const SECRET = 'mysecretkey123'
+
+// Middleware - check if user is logged in
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) {
+    return res.status(401).json({ message: 'No token!' })
+  }
+  try {
+    const decoded = jwt.verify(token, SECRET)
+    req.userId = decoded.id
+    next()
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token!' })
+  }
+}
+
 // REGISTER
 router.post('/register', async (req, res) => {
   try {
@@ -13,7 +36,28 @@ router.post('/register', async (req, res) => {
     await user.save()
     res.json({ message: 'User registered successfully! ✅' })
   } catch (err) {
-    console.log('Register error:', err.message)  // ← add this
-    res.status(500).json({ message: err.message })  // ← change this
+    console.log('Register error:', err.message)
+    res.status(500).json({ message: err.message })
   }
 })
+
+// LOGIN
+router.post('/login', async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.body.username })
+    if (!user) {
+      return res.status(400).json({ message: 'User not found!' })
+    }
+    const isMatch = await bcrypt.compare(req.body.password, user.password)
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Wrong password!' })
+    }
+    const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1d' })
+    res.json({ token, username: user.username })
+  } catch (err) {
+    console.log('Login error:', err.message)
+    res.status(500).json({ message: err.message })
+  }
+})
+
+module.exports = { router, authMiddleware }
